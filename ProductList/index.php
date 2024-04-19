@@ -20,16 +20,43 @@
 
     $safeHandlerFunction();
 
+    function complieTemplate($filePath, $params = []): string
+    {
+        ob_start();
+        require $filePath;
+        return ob_get_clean();
+    }
+
     function homeHandler() {
-        echo "Címlap!";
+        complieTemplate('.views/wrapper.php');
     }
 
     function productListHandler() {
-        echo "Termék lista!";
+        $contents = file_get_contents("./products.json");
+        $products = json_decode($contents, true);
+        include './views/product-list.php';
+        $isSuccess = isset($_GET['siker']);
     }
 
+
+    
     function createProductHandler() {
-        echo "Termék készítés!";
+        echo '<pre>';
+        var_dump($_POST);
+        $newProduct = [
+            "name" => $_POST["name"],
+            "price" => (int)$_POST["price"],
+        ];
+
+        $content = file_get_contents("./products.json");
+        $products = json_decode($content, true);
+
+        array_push($products, $newProduct);
+
+        $json = json_encode($products);
+        file_put_contents("./products.json", $json);
+
+        header("Location: /termekek?siker=true");
     }
 
     function notFoundHandler() {

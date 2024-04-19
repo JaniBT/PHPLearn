@@ -32,7 +32,6 @@
 
         // echo "You are $age years old, and your name is: $username! Your email address is: $email";
 
-
         // VALIDATE:
 
         $age = filter_input(INPUT_POST, "age", FILTER_VALIDATE_INT); // validátor, ha rendes int-et kap akkor azt adja vissza, ha nem, ez esetben egy üres string-et.
