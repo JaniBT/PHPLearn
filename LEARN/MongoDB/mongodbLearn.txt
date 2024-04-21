@@ -1,0 +1,105 @@
+// Clearing the MongoDB Shell
+
+cls
+
+// CreateDatabase
+
+use nameOfDatabase
+db.nameOfDatabase.createCollection("students")
+
+// Important: You insert data into the created collection not into the database itself!
+
+// Insert Data
+
+db.students.insertOne({data: "Datas" etc...})
+
+// Insert More than One Data
+
+db.students.insertMany([{data: "data", etc...}, {data: "data", etc...}, {data: "data", etc...}])
+
+// DataTypes
+
+db.students.insertOne({
+    name: "Larry",  // String
+    age: 32,   // integer
+    gpa: 2.8,   // float or double
+    fullTime: false,   // boolean
+    registerDate: new Date(),   // DATE
+    graduationDate: null}),   // Null Value, (will be changed later probably)
+    courses: ["Biology", "Chemistry", "Calculus"], // Array, can contain multiple characters
+    address: {street: "123 Fake St.", city: "Bikini Bottom", zip: 1234}}) // Object, can contain multiple key value pairs
+
+// Sorting or limiting documents
+
+db.students.find().sort({name: 1})  // Alphabetical Order
+db.students.find().sort({name: -1})  // Reverse Alphabetical
+
+db.students.find().sort({gpa: 1}) // Ascended Order
+db.students.find().sort({gpa: -1})  // Descended Order
+
+Limiting:
+
+db.students.find().limit(`LimitNumber, for example`: 2)
+
+Combining the two:
+
+db.students.find().sort({name: 1}).limit(2) // for example
+
+// Find method:
+
+db.students.find({name: "Larry"}) // Search for a specific name
+db.students.find({gpa: 2.8, fullTime: false}) // Filter the search by more than one query argument
+
+db.students.find({}, {_id: false, name: true}) // Filter search by only the prerequired data objects
+
+// Update document/s
+
+db.students.updateOne({name: "Larry"}, {$set: {fullTime: true}}) 
+
+// updated the document which had the name value "Larry". $set means that it changes a key's value to something the user gives or if the key doesn't exist it creates it for the document
+
+db.students.updateOne({_id: ObjectId('6624e622a9005de47f117b7d')}, {$unset: {fullTime: ""}}) // You can unset a key with the "$unset" method. In this example the document with the targeted id now doesn't have a fullTime parameter
+
+
+// Update Many:
+
+db.students.updateMany({}, {$set: {fullTime: false}}) // Here when you write a blank set of braces all of the documents's fullTime key will be changed to false
+
+db.students.updateMany({fullTime: {$exists: false}}, {$set: {fullTime: true}})  // In this example we would like to update every document that doesn't have the fullTime key. The "$exists" operator does the finding of the documents that doesn't have the "fullTime" key and if it finds one, the "$set" operator will set the "fullTime" key to be true.
+
+
+// Deleting a document
+
+db.students.deleteOne({name: "Larry"}) // You can filter the delete
+
+db.students.deleteMany({fullTime: false}) // Deletes every document that has a fullTime key set to false
+
+db.students.deleteMany({registerDate: {$exists: false}}) // this deletes every document that doesn't have a registerDate key
+
+
+// Comparison Operators
+
+db.students.find({name: {$ne: "Spongebob"}}) // "$ne" means Not Equal, so if you write for example Spongebob there, it will show you every other document except for the given argument (here Spongebob).
+
+db.students.find({age: {$lt: 30}}) // "$lt" means Less Than, (so it shows you every document that has the age key's value less than 30)
+
+db.students.find({age: {$lte: 30}}) // "$lte" means Less Than Equal To
+
+// -- Same with the greater than -- \\
+
+db.students.find({age: {$gt: 30}}) // "$gt" means Greater Than
+
+db.students.find({age: {$gte: 30}}) // "$gte" means Greater Than Equal To
+
+// You can combine them to find documents within a certain range
+
+db.students.find({gpa: {$gte: 3, $lte: 4}}) // gives back everything between the two
+
+
+// You can even find documents with the "$in" operator. In this example if the name's value is equal to one of the array's values it will show up
+
+db.students.find({name: {$in: ["Spongebob", "Sandy"]}})
+
+// Same as before just the "$nin" means Not In. So It gives back everything except those that have the name's value as in the array
+
+db.students.find({age: {$nin: ["Spongebob", "Sandy"]}})
