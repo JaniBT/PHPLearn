@@ -7,6 +7,10 @@ cls
 use nameOfDatabase
 db.nameOfDatabase.createCollection("students")
 
+// delete collection
+
+db.students.drop()
+
 // Important: You insert data into the created collection not into the database itself!
 
 // Insert Data
@@ -103,3 +107,37 @@ db.students.find({name: {$in: ["Spongebob", "Sandy"]}})
 // Same as before just the "$nin" means Not In. So It gives back everything except those that have the name's value as in the array
 
 db.students.find({age: {$nin: ["Spongebob", "Sandy"]}})
+
+
+// Logical Operators
+
+db.students.find({$and: [{fullTime: true}, {age: {$lte: 35}}]}) // In this example we have two condition, this way it's easier to filter the datas we need. "$and" operator stands for AND, just like in MySQL
+
+db.students.find({$or: [{fullTime: true}, {age: {$lte: 35}}]}) // This is the OR operator, it will give back a list if at least one of the conditions are true, and gives back false if neither of them is true
+
+db.students.find({$nor: [{fullTime: false}, {age: {$lte: 15}}]}) // The $nor operator. It works like $and but here all of the conditions must be false to give back a result.
+
+db.students.find({age: {$not: {$gte: 30}}}) // The $not operator. It gives back the opposite results of the condition. Like in this example, the $gte: 30 (greater than equal to 30) would give back everyone that is above or 30 years old, but because of the $not operator it gives back everyone who's less than 30 years old. IMPORTANT! $not Operator also gives back every document that has the age set to null, so it can become handy because of this.
+
+// For execution Stats run the query like this:
+
+db.students.find({name: "Larry"}).explain("executionStats")
+
+.explain("executionStats") is the important part here.
+
+
+// Indexes:
+
+db.students.createIndex({name: 1}) // Create an index
+
+// With index you can achieve faster results. It's a good thing but if you plan to update the datas frequently you should avoid this
+// Use indexing when you are doing a lot of search but don't update the documents that frequently because it takes up more time and more memory.
+
+db.students.getIndexes() // Shows all your indexes
+
+
+// Collections
+
+show collections // shows all the collections in a database
+
+db.createCollection("students", {capped: true, size: 10000000, max: 100}, {autoIndexId: false}) // Create a custom collection. size is given number * 1024. (here it's 10MB), max is the size of the collection, so here it can be a max of 100 documents. And lastly autoIndexId stands for the basic indexing of the ObjectIds. You can turn it off by typing false or turn it on by typing true. (The default is set to true!)
