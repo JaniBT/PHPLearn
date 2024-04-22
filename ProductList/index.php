@@ -20,7 +20,7 @@
 
     $safeHandlerFunction();
 
-    function complieTemplate($filePath, $params = []): string
+    function compileTemplate($filePath, $params = []): string
     {
         ob_start();
         require $filePath;
@@ -28,14 +28,27 @@
     }
 
     function homeHandler() {
-        complieTemplate('.views/wrapper.php');
+        $homeTemplate = compileTemplate("./views/home.php");
+
+        echo compileTemplate("./views/wrapper.php", [
+            'innerTemplate' => $homeTemplate
+        ]);
     }
 
     function productListHandler() {
+        
         $contents = file_get_contents("./products.json");
         $products = json_decode($contents, true);
-        include './views/product-list.php';
         $isSuccess = isset($_GET['siker']);
+        
+        $productListTemplate = compileTemplate("./views/product-list.php", [
+            'products' => $products,
+            'isSuccess' => $isSuccess
+        ]);
+
+        echo compileTemplate("./views/wrapper.php", [
+            'innerTemplate' => $productListTemplate
+        ]);
     }
 
 

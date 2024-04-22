@@ -17,7 +17,7 @@
             </a>
         </div>
     </nav>
-    <?php $params;?>
+    <?= $params['innerTemplate'] ;?>
     <footer class="bg-danger text-center fixed-bottom text-lg-start">
         <div class="text-center p-3">
             Footer Tartalom

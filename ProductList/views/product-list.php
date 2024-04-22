@@ -1,5 +1,5 @@
 <div class="card container p-3 m-3">
-        <?php if ($isSucces) : ?>
+        <?php if ($params["isSuccess"]) : ?>
             <div class="alert alert-success">
                 Termék létrehozása sikeres
             </div>
@@ -9,7 +9,7 @@
             <input type="number" name="price" placeholder="Ár..."> <br>
             <input type="submit" name="submit" class="btn btn-success" value="Küldés">
         </form>
-        <?php foreach ($products as $product) : ?>
+        <?php foreach ($params['products'] as $product) : ?>
             <h3>Név: <?= $product["name"] ?></h3>
             <p>Ár: <?= $product["price"] ?> Ft</p>
             <hr>
