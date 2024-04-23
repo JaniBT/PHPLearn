@@ -10,7 +10,9 @@
             "/termekek" => "ProductListHandler"
         ],
         "POST" => [
-            "/termekek" => "createProductHandler"
+            "/termekek" => "createProductHandler",
+            "/delete-product" => 'deleteProductHandler',
+            "/edit-product" => 'editProductHandler'
         ]
     ];
 
@@ -31,7 +33,8 @@
         $homeTemplate = compileTemplate("./views/home.php");
 
         echo compileTemplate("./views/wrapper.php", [
-            'innerTemplate' => $homeTemplate
+            'innerTemplate' => $homeTemplate,
+            'activeLink' => '/',
         ]);
     }
 
@@ -43,20 +46,48 @@
         
         $productListTemplate = compileTemplate("./views/product-list.php", [
             'products' => $products,
-            'isSuccess' => $isSuccess
+            'isSuccess' => $isSuccess,
+            'editedProductId' => $_GET['szerkesztes'] ?? ''
         ]);
 
         echo compileTemplate("./views/wrapper.php", [
-            'innerTemplate' => $productListTemplate
+            'innerTemplate' => $productListTemplate,
+            'activeLink' => '/termekek'
         ]);
     }
 
+    function editProductHandler() {
+        $editedProductId = $_GET['id'];
+        $editedName = $_POST['editedName'];
+        $editedPrice = $_POST['editedPrice'];
+
+        $content = file_get_contents("./products.json");
+        $products = json_decode($content, true);
+        $foundProductIndex = -1;
+
+        foreach ($products as $index => $product) {
+            if ($product['id'] === $editedProductId) {
+                $foundProductIndex = $index;
+            }
+        }
+
+        if ($foundProductIndex === -1) {
+            return;
+        }
+
+        array_splice($products, $foundProductIndex, 1, [(object)["id" => "$editedProductId", "name" => "$editedName", "price" => "$editedPrice"]]);
+
+        file_put_contents("./products.json", json_encode($products));
+
+        header("Location: /termekek");
+    }
 
     
     function createProductHandler() {
         echo '<pre>';
         var_dump($_POST);
         $newProduct = [
+            "id" => uniqid(),
             "name" => $_POST["name"],
             "price" => (int)$_POST["price"],
         ];
@@ -74,5 +105,32 @@
 
     function notFoundHandler() {
         echo "Oldal nem található!";
+    }
+
+    function deleteProductHandler() {
+        $deletedProductId = $_GET['id'];
+        $products = json_decode(file_get_contents('products.json'), true);
+        $foundProductId = -1;
+
+        foreach ($products as $index => $product) {
+            if ($product['id'] === $deletedProductId) {
+                $foundProductId = $index;
+                break;
+            }
+        }
+
+        if ($foundProductId === -1) {
+            return;
+        }
+
+        array_splice($products, $foundProductId, 1);
+
+        $json = json_encode($products);
+        file_put_contents("./products.json", $json);
+
+        header("Location: /termekek");
+
+        // echo '<pre>';
+        // var_dump($products);
     }
 ?>
