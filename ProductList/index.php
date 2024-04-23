@@ -68,6 +68,7 @@
         foreach ($products as $index => $product) {
             if ($product['id'] === $editedProductId) {
                 $foundProductIndex = $index;
+                break;
             }
         }
 
