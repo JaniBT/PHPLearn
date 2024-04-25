@@ -60,6 +60,9 @@
         $editedProductId = $_GET['id'];
         $editedName = $_POST['editedName'];
         $editedPrice = $_POST['editedPrice'];
+        $editedQuantity = $_POST['editedQuantity'];
+        $editedDiscount = $_POST['editedDiscount'];
+        $editedDescription = $_POST['editedDescription'];
 
         $content = file_get_contents("./products.json");
         $products = json_decode($content, true);
@@ -76,7 +79,7 @@
             return;
         }
 
-        array_splice($products, $foundProductIndex, 1, [(object)["id" => "$editedProductId", "name" => "$editedName", "price" => "$editedPrice"]]);
+        array_splice($products, $foundProductIndex, 1, [(object)["id" => "$editedProductId", "name" => "$editedName", "price" => "$editedPrice", "quantity" => "$editedQuantity", "discount" => "$editedDiscount", "description" => "$editedDescription"]]);
 
         file_put_contents("./products.json", json_encode($products));
 
@@ -85,12 +88,16 @@
 
     
     function createProductHandler() {
-        echo '<pre>';
-        var_dump($_POST);
+        $discountPrice = (float)($_POST["discount"] / 100);
+        $discountedPrice = $discountPrice == 0 ? 1 : $discountPrice;
+        
         $newProduct = [
             "id" => uniqid(),
             "name" => $_POST["name"],
             "price" => (int)$_POST["price"],
+            "quantity" => (int)$_POST["quantity"],
+            "discount" => $discountedPrice,
+            "description" => $_POST["description"]
         ];
 
         $content = file_get_contents("./products.json");
