@@ -13,7 +13,7 @@
             <input type="submit" name="submit" class="btn btn-success" value="Küldés">
         </form>
         <?php foreach ($params['products'] as $product) : ?>
-            <div class="border">
+            <div class="p-2 border">
                 <h3 class="m-0"><strong>Név:</strong> <?= $product["name"] ?></h3>
                 <p class="m-0"><strong><?= $product["discount"] === 1 ? "" : "Kedvezményes " ;?> Ár:</strong> <?= $product["price"] - $product["price"] * $product["discount"] ?> Ft</p>
                 <p class="m-0"><strong>Mennyiség:</strong> <?= $product["quantity"] ?></p>
