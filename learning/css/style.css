@@ -1,0 +1,8 @@
+body {
+    margin: 0;
+}
+
+input {
+    border: .9px solid gray;
+    padding: .5rem .75rem;
+}
