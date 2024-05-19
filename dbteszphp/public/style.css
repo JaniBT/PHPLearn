@@ -1,0 +1,12 @@
+:root {
+    --bg-navigation: #222222;
+    --text-navigation: #FEFEFE;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}

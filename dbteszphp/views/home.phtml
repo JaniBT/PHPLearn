@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/style.css">
+    <title>Könyvtárak</title>
+</head>
+<body>
+    <header class="navigation-wrapper">
+        <h1>Könyvtárak</h1>
+        <nav>
+            <a href="/">Kezdőlap</a>
+            <a href="/counties">Megyék</a>
+        </nav>
+    </header>
+    <main class="container">
+        <ul>
+            <?php foreach ($results as $row): ?>
+                <li><a href="<?= htmlspecialchars($row['id']) ?>"><?php echo htmlspecialchars($row['megyeNev']);?></a></li>
+            <?php endforeach;?>
+        </ul>
+    </main>
+    <footer>
+        <p>Magyarország könyvtárai</p>
+    </footer>
+</body>
+</html>
