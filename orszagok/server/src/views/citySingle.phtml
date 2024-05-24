@@ -1,0 +1,24 @@
+<h1 class="text-center p-3">
+    <?= $params['city']['name'] ?>
+</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">District</th>
+            <th scope="col">Population</th>
+            <th scope="col">Capital</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><?= $params['city']['name'] ?></td>
+            <td><?= $params['city']['district'] ?></td>
+            <td><?= $params['city']['population'] ?></td>
+            <td class="<?= $params['city']['isCapital'] == '1' ? 'text-success' : 'text-danger'?>">
+                <?= $params['city']['isCapital'] == '1' ? 'Yes' : 'No' ?>
+            </td>
+        </tr>
+    </tbody>
+</table>
