@@ -60,19 +60,28 @@ function registrationHandler()
     header('Location: /');
 }
 
+function isLoggedIn() {
+    if (!isset($_COOKIE[session_name()])) {
+        return false;
+    }
+    session_start();
+
+    if (!isset($_SESSION['userId'])) {
+        return false;
+    }
+
+    return true;
+}
+
 function singleCountryHandler()
 {
-    if (isset($_COOKIE[session_name()])) {
-        session_start();
+    if (!isLoggedIn()) {
+        echo compileTemplate('wrapper.phtml', [
+            'content' => compileTemplate('subscriptionForm.phtml')
+        ]);
 
-        var_dump($_SESSION);
+        return;
     }
-    exit;
-    echo compileTemplate('wrapper.phtml', [
-        'content' => compileTemplate('subscriptionForm.phtml')
-    ]);
-
-    return;
 
     $countryId = $_GET['id'] ?? '';
     $pdo = getConntection();
