@@ -12,7 +12,8 @@ $routes = [
     ],
     'POST' => [
         "/register" => "registrationHandler",
-        "/login" => "loginHandler"
+        "/login" => "loginHandler",
+        "/logout" => "logoutHandler"
     ],
 ];
 
@@ -28,20 +29,46 @@ function loginHandler()
     $user = $statement->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        echo "invalidCredentials";
+        header("Location: " . getPathWithId($_SERVER['HTTP_REFERER']) . '$info=invalidCredentials');
         return;
     }
     
     $isVerified = password_verify($_POST["password"], $user["password"]);
     if (!$isVerified) {
-        echo 'invalid Credentials';
+        header("Location: " . getPathWithId($_SERVER['HTTP_REFERER']) . '$info=invalidCredentials');
         return;
     }
 
     session_start();
     $_SESSION['userId'] = $user["id"];
 
-    header("Location: /");
+    header("Location: " . header("Location: " . getPathWithId($_SERVER['HTTP_REFERER'])));
+}
+
+function getPathWithId($url) {
+    $parsed = parse_url($url);
+
+    if (!isset($params['query'])) {
+        return $url;
+    }
+
+    $queryParams = [];
+    parse_str($params['query'], $queryParams);
+
+    return $parsed['path'] . '?id=' . $queryParams['id'];
+
+    header('Location: ' . getPathWithId($_SERVER['HTTP_REFERER']));
+
+}
+
+function logoutHandler() {
+    session_start();
+
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', 0, $params['path'], $params['domain'], $params['secure'], isset($params['httponly']));
+
+    session_destroy();
+    header("Location: " . getPathWithId($_SERVER['HTTP_REFERER']));
 }
 
 function registrationHandler()
@@ -57,7 +84,7 @@ function registrationHandler()
         time()
     ]);
 
-    header('Location: /');
+    header("Location: " . getPathWithId($_SERVER['HTTP_REFERER']) . '$info=registrationSuccessful');
 }
 
 function isLoggedIn() {
@@ -77,7 +104,12 @@ function singleCountryHandler()
 {
     if (!isLoggedIn()) {
         echo compileTemplate('wrapper.phtml', [
-            'content' => compileTemplate('subscriptionForm.phtml')
+            'content' => compileTemplate('subscriptionForm.phtml', [
+                'info' => $_GET['info'] ?? '',
+                'isRegistration' => isset($_GET['isRegistration']),
+                'url' => getPathWithId($_SERVER['REQUEST_URI'])
+            ]),
+            'isAutorized' => false
         ]);
 
         return;
@@ -111,7 +143,8 @@ function singleCountryHandler()
             'country' => $country,
             'cities' => $cities,
             'languages' => $languages,
-        ])
+        ]),
+        'isAuthorized' => true
     ]);
 };
 
@@ -141,8 +174,9 @@ function countryListHandler()
 
     echo compileTemplate('wrapper.phtml', [
         'content' => compileTemplate('countryList.phtml', [
-            'countries' => $countries
-        ])
+            'countries' => $countries,
+        ]),
+        'isAuthorized' => isLoggedIn()
     ]);
 };
 

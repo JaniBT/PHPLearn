@@ -12,6 +12,11 @@
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <a href="/" class="navbar-brand">Countries</a>
+        <?php if ($params['isAuthorized']): ?>
+            <form action="/logout" method="POST">
+                <button class="btn btn-sm btn-danger m-2" type="submit">Logout</button>
+            </form>
+        <?php endif ;?>
     </nav>
     <?= $params['content'] ?>
 
