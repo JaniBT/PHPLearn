@@ -42,23 +42,22 @@ function loginHandler()
     session_start();
     $_SESSION['userId'] = $user["id"];
 
-    header("Location: " . header("Location: " . getPathWithId($_SERVER['HTTP_REFERER'])));
+    header("Location: " . getPathWithId($_SERVER['HTTP_REFERER']));
 }
 
 function getPathWithId($url) {
     $parsed = parse_url($url);
 
-    if (!isset($params['query'])) {
+    if (!isset($parsed['query'])) {
         return $url;
     }
 
     $queryParams = [];
-    parse_str($params['query'], $queryParams);
+    parse_str($parsed['query'], $queryParams);
 
     return $parsed['path'] . '?id=' . $queryParams['id'];
 
     header('Location: ' . getPathWithId($_SERVER['HTTP_REFERER']));
-
 }
 
 function logoutHandler() {
@@ -109,7 +108,7 @@ function singleCountryHandler()
                 'isRegistration' => isset($_GET['isRegistration']),
                 'url' => getPathWithId($_SERVER['REQUEST_URI'])
             ]),
-            'isAutorized' => false
+            'isAuthorized' => false
         ]);
 
         return;

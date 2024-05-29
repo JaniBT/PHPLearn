@@ -29,7 +29,7 @@
         <button class="btn btn-success form-control my-3" type="submit">Registration</button>
     </form>
     Van már felhasználói fiókod?
-    <a href="<?= $params['url'] ?>&isRegistration=1">Bejelentkezés</a>
+    <a href="<?= $params['url'] ?>">Bejelentkezés</a>
 <?php else :?>
     <form action="/login" class="w-75 mx-auto" method="post">
     <label class="w-100">
@@ -43,5 +43,5 @@
     <button class="btn btn-primary form-control my-3" type="submit">Login</button>
     </form>
     Nincs még felhasználói fiókod?
-    <a href="<?= $params['url'] ?>">Regisztráció</a>
+    <a href="<?= $params['url'] ?>&isRegistration=1">Regisztráció</a>
 <?php endif;?>
