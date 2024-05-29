@@ -1,43 +1,20 @@
 <section class="ftco-section">
-  <div class="container">
+  <div class="container mt-5">
     <div class="row">
       <div class="col-md-12">
-        <div class="row mb-4 border-bottom border-dark">
-          <div class="d-flex">
-            <div class="desc pl-3">
-              <div class="d-flex text align-items-center">
-                <h3><span>Levesek</span></h3>
+        <?php foreach($params['dishTypes'] as $dishType): ?>
+          <div class="row mb-4 border-bottom border-dark">
+            <div class="d-flex">
+              <div class="desc pl-3">
+                <div class="d-flex text align-items-center">
+                  <h3><span>
+                    <?= $dishType['name'] ?>
+                  </span></h3>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="row mb-4 border-bottom border-dark">
-          <div class="d-flex ">
-            <div class="desc pl-3">
-              <div class="d-flex text align-items-center">
-                <h3><span>Főételek</span></h3>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4 border-bottom border-dark">
-          <div class="d-flex ">
-            <div class="desc pl-3">
-              <div class="d-flex text align-items-center">
-                <h3><span>Desszertek</span></h3>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4 border-bottom border-dark">
-          <div class="d-flex ">
-            <div class="desc pl-3">
-              <div class="d-flex text align-items-center">
-                <h3><span>Italok</span></h3>
-              </div>
-            </div>
-          </div>
-        </div>
+        <?php endforeach;?>
       </div>
     </div>
 

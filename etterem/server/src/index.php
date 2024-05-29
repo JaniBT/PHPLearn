@@ -14,7 +14,13 @@ $routes = [
     ['GET', '/admin/etel-szerkesztese/{keresoBaratNev}', 'dishEditHandler'],
     ['GET', '/admin', 'adminDashboardHandler'],
     ['POST', '/login', 'loginHandler'],
-    ['POST', '/update-dish/{dishId}', 'updateDishHandler']
+    ['POST', '/update-dish/{dishId}', 'updateDishHandler'],
+    ['GET', '/admin/uj-etel-letrehozasa', 'dishCreatePageHandler'],
+    ['POST', '/create-dish', 'createDishHandler'],
+    ['POST', '/delete-dish/{dishId}', 'deleteDishHandler'],
+    ['GET', '/admin/etel-tipusok', 'adminDishTypeHandler'],
+    ['POST', '/create-dish-type', 'createDishTypeHandler'],
+    ['POST', '/logout', 'logoutHandler']
 ];
 
 // Útvonalválasztó inicializálása
@@ -22,6 +28,85 @@ $dispatch = registerRoutes($routes);
 $matchedRoute = $dispatch($method, $path);
 $handlerFunction = $matchedRoute['handler'];
 $handlerFunction($matchedRoute['vars']);
+
+function logoutHandler() {
+    session_start();
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', 0, $params['path'], $params['domain'], $params['secure'], isset($params['httponly']));
+    session_destroy();
+    
+    header('Location: /');
+}
+
+function createDishTypeHandler() {
+    redirectToLoginIfNotSignedIn();
+    $pdo = getConnection();
+    $stmt = $pdo->prepare(
+        'INSERT INTO dishTypes (name, slug, description) VALUES (?, ?, ?)'
+    );
+
+    $stmt->execute([
+        $_POST['name'],
+        slugify($_POST['name']),
+        $_POST['description']
+    ]);
+
+    header('Location: /admin/etel-tipusok');
+}
+
+function adminDishTypeHandler() {
+    redirectToLoginIfNotSignedIn();
+
+    $pdo = getConnection();
+    $dishTypes = getAllDishTypes($pdo);
+
+    echo render("admin-wrapper.phtml", [
+        'content' => render('dish-type-list.phtml', [
+            'dishTypes' => $dishTypes
+        ])
+    ]);
+}
+
+function deleteDishHandler($urlParams) {
+    redirectToLoginIfNotSignedIn();
+
+    $pdo = getConnection();
+    $stmt = $pdo->prepare('DELETE FROM dishes WHERE id = ?');
+    $stmt->execute([$urlParams['dishId']]);
+
+    header('Location: /admin');
+}
+
+function dishCreatePageHandler() {
+    redirectToLoginIfNotSignedIn();
+
+    $pdo = getConnection();
+    $dishTypes = getAllDishTypes($pdo);
+
+    echo render('admin-wrapper.phtml', [
+        'content' => render('create-dish.phtml', [
+            'dishTypes' => $dishTypes
+        ])
+    ]);
+}
+
+function createDishHandler() {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare(
+        "INSERT INTO dishes (name, slug, description, price, isActive, dishTypeId) VALUES (:nev, :slug, :leiras, :ar, :aktiv, :dishTypeId)"
+    );
+
+    $stmt->execute([
+        "nev" => $_POST["name"],
+        "slug" => slugify($_POST["name"]),
+        "leiras" => $_POST["description"],
+        "ar" => $_POST["price"],
+        "aktiv" => (int)isset($_POST["isActive"]),
+        "dishTypeId" => $_POST["dishTypeId"]
+    ]);
+
+    header("Location: /admin");
+}
 
 function loginHandler() {
     $pdo = getConnection();
@@ -83,9 +168,7 @@ function adminDashboardHandler() {
 function homeHandler()
 {
     $pdo = getConnection();
-    $stmt = $pdo->prepare('SELECT * FROM dishTypes');
-    $stmt->execute();
-    $dishTypes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $dishTypes = getAllDishTypes($pdo);
 
     foreach($dishTypes as $index => $dishType) {
         $stmt = $pdo->prepare("SELECT * FROM dishes WHERE isActive = 1 AND dishTypeId = ?");
@@ -103,14 +186,13 @@ function homeHandler()
 
 function dishEditHandler($vars)
 {
+    redirectToLoginIfNotSignedIn();
     $pdo = getConnection();
     $stmt = $pdo->prepare('SELECT * FROM dishes WHERE slug = ?');
     $stmt->execute([$vars['keresoBaratNev']]);
     $dish = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $stmt = $pdo->prepare('SELECT * FROM dishTypes');
-    $stmt->execute();
-    $dishTypes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $dishTypes = getAllDishTypes($pdo);
 
     echo render("admin-wrapper.phtml", [
         'content' => render("edit-dish.phtml", [
@@ -118,6 +200,14 @@ function dishEditHandler($vars)
             'dishTypes' => $dishTypes
         ])
     ]);
+}
+
+function getAllDishTypes($pdo) {
+    $stmt = $pdo->prepare('SELECT * FROM dishTypes');
+    $stmt->execute();
+    $dishTypes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $dishTypes;
 }
 
 function redirectToLoginIfNotSignedIn() {
